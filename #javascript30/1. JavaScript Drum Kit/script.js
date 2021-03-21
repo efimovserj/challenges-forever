@@ -28,14 +28,16 @@ function jogglingStyles(code) {
 
 /** Not good implementation if key was Sleeping
  function removeTransition(e) {
-        if (e.propertyName !== "transform") return undefined;
+  if (e.propertyName !== "transform") return undefined;
 
-        this.classList.remove("playing");
-      }
+  this.classList.remove("playing");
+}
 
- const keyElementList = document.querySelectorAll(".key");
- keyElementList.forEach((key) => {
-        key.addEventListener("transitionend", removeTransition);
-      });*/
+const keyElementList = document.querySelectorAll(".key");
+
+keyElementList.forEach((key) => {
+  key.addEventListener("transitionend", removeTransition);
+});
+ */
 
 window.addEventListener("keydown", keyPress);

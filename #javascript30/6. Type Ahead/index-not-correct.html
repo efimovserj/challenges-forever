@@ -1,0 +1,75 @@
+<!-- Not correct version! -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script async>
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
+      let dataList = [];
+      const input = document.querySelector(".search");
+      const ulList = document.querySelector(".suggestions");
+
+      async function getData() {
+        return fetch(endpoint).then((data) => data.json());
+      }
+
+      function filterData(value) {
+        return dataList.filter((item) => {
+          return (
+            item.city.toLowerCase().includes(value) ||
+            item.state.toLowerCase().includes(value)
+          );
+        });
+      }
+
+      const findResult = ({ target }) => {
+        const inputValue = target.value;
+        const inputValueLower = inputValue.toLowerCase();
+        const filteredList = filterData(inputValueLower);
+        const countryCode = "en";
+
+        // Clear previous result
+        ulList.innerHTML = "";
+
+        function addHighlightPart(param) {
+          return param
+            .toLowerCase()
+            .replace(inputValueLower, `<span class='hl'>${inputValue}</span>`);
+        }
+
+        filteredList.forEach(({ city, state, population }) => {
+          const newCity = addHighlightPart(city);
+          const newState = addHighlightPart(state);
+          const li = document.createElement("li");
+
+          li.innerHTML = `
+              <span>${newCity}, ${newState}</span>
+              <span class="population">${(+population).toLocaleString(
+                countryCode
+              )}</span>
+            `;
+
+          ulList.appendChild(li);
+        });
+      };
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        dataList = await getData();
+        input.addEventListener("input", findResult);
+      });
+    </script>
+  </body>
+</html>

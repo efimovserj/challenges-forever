@@ -1,0 +1,67 @@
+<!-- Not correct version! -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script async>
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
+      const cities = [];
+
+      fetch(endpoint)
+        .then((data) => data.json())
+        .then((data) => cities.push(...data));
+
+      function matchCities(word) {
+        const regexp = new RegExp(word, "gi");
+
+        return cities.filter((place) => {
+          return place.city.match(regexp) || place.state.match(regexp);
+        });
+      }
+
+      function displayCities() {
+        const matchedCities = matchCities(this.value);
+        const regexp = new RegExp(this.value, "gi");
+        const resultCities = matchedCities.map(
+          ({ city, state, population }) => {
+            const newCity = city.replace(
+              regexp,
+              `<span class='hl'}>${this.value}</span>`
+            );
+            const newState = state.replace(
+              regexp,
+              `<span class='hl'}>${this.value}</span>`
+            );
+
+            return `
+            <li>
+              <span>${newCity}, ${newState}</span>
+              <span>${(+population).toLocaleString("en")}</span>
+            </li>
+          `;
+          }
+        );
+
+        suggestions.innerHTML = resultCities.join("");
+      }
+
+      const input = document.querySelector(".search");
+      const suggestions = document.querySelector(".suggestions");
+
+      input.addEventListener("input", displayCities);
+    </script>
+  </body>
+</html>
